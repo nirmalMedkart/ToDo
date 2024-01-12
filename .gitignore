@@ -2,3 +2,4 @@ venv
 settings.py
 migrations
 db.sqlite3
+.rar

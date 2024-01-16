@@ -7,56 +7,64 @@ import datetime
 from django.contrib.auth.decorators import login_required
 from django.conf import settings
 from django.core.mail import send_mail
+from django.views.decorators.cache import cache_control
 
 # Create your views here.
 @login_required(login_url="login")
 def index(request):
-    # Scheduled_task()
     tasks = Task.objects.filter(members=request.user)
+    for task in tasks:
+        if task.start_date and task.end_date:
+            Scheduled_task(task.id,task.start_date, task.end_date)
     context = {'tasks':tasks}
     return render(request,'index.html', context)
 
 def register(request):
-    if request.method == 'POST':
-        username = request.POST.get('username')
-        email = request.POST.get('email')
-        password1 = request.POST.get('password')
-        password2 = request.POST.get('password2')
+    if not request.user.is_authenticated:
+        if request.method == 'POST':
+            username = request.POST.get('username')
+            email = request.POST.get('email')
+            password1 = request.POST.get('password')
+            password2 = request.POST.get('password2')
 
-        if User.objects.filter(username=username).first():
-            messages.error(request, "User is exist.")
+            if User.objects.filter(username=username).first():
+                messages.error(request, "User is exist.")
 
-        if User.objects.filter(email=email).first():
-            messages.error(request, "User is exist.")
-        
-        if len(password1) < 6:
-            messages.error(request, "Password length is aleast 6 characters.")
+            if User.objects.filter(email=email).first():
+                messages.error(request, "User is exist.")
+            
+            if len(password1) < 6:
+                messages.error(request, "Password length is aleast 6 characters.")
 
-        if password1 != password2:
-            messages.error(request, "Passwords are not same.")
-        
-        user = User.objects.create(username=username, email=email)
-        user.set_password(password1)
-        
-        if user:
-            user.save()
-            messages.success(request, "Register successfuly.")
-
+            if password1 != password2:
+                messages.error(request, "Passwords are not same.")
+            
+            user = User.objects.create(username=username, email=email)
+            user.set_password(password1)
+            
+            if user:
+                user.save()
+                messages.success(request, "Register successfully.")
+    else:
+        return redirect("home")
     return render(request, 'register.html')
 
-
+@cache_control(no_cache=True, must_revalidate=True)
 def signin(request):
-    if request.method == 'POST':
-        username = request.POST.get('username')
-        password = request.POST.get('password')
+    if not request.user.is_authenticated:
+        if request.method == 'POST':
+            username = request.POST.get('username')
+            password = request.POST.get('password')
 
-        user = authenticate(username=username, password=password)
-        if user is not None:
-            login(request, user)
-            messages.info(request, f"You are now logged in as {username}.")
-            return redirect("home")
-        else:
-            messages.error(request,"Invalid username or password.")
+            user = authenticate(username=username, password=password)
+            if user is not None:
+                login(request, user)
+                messages.info(request, f"You are now logged in as {username}.")
+                return redirect("home")
+            else:
+                messages.error(request,"Invalid username or password.")
+    else:
+        return redirect("home")
         
     return render(request, 'login.html')
 
@@ -68,13 +76,20 @@ def createTask(request):
         title = request.POST.get('title')
         desc = request.POST.get('desc')
         members = request.POST.getlist('members')
-        print(members)
+        s_date = request.POST.get('s_date')
+        e_date = request.POST.get('e_date')
 
+        # print(members)
+        # start_date =  datetime.datetime.combine(datetime.date(str(s_date)), datetime.time(str(s_time)))
+        # end_date =  datetime.datetime.combine(datetime.date(str(e_date)), datetime.time(str(e_time)))
         task = Task.objects.create(
             user=user,
             title=title,
-            desc=desc
+            desc=desc,
             )
+        if s_date:
+            task.start_date = s_date
+            task.end_date = e_date
         users=[]
         for i in members:
             task.members.add(i)
@@ -110,8 +125,8 @@ def editTask(request, id):
     if request.method == 'POST':
         title = request.POST.get('title')
         desc = request.POST.get('desc')
-        start_date = request.POST.get('start_date')
-        end_date = request.POST.get('end_date')
+        start_date = request.POST.get('s_date')
+        end_date = request.POST.get('e_date')
         members = request.POST.get('members')
         data = Task.objects.get(id=id)
         if request.user != data.user:
@@ -178,12 +193,16 @@ def signout(request):
     messages.info(request, "You have successfully logged out.") 
     return redirect('login')
 
-# def Scheduled_task():
-#     tasks=Task.objects.all()
-#     date1 = parser.parse(str(datetime.datetime.now()))
-#     for i in tasks:
-#         if i.end_date:
-#             date2 = parser.parse(str(i.end_date))
-#             diff = date2 - date1
-#             if diff.days <= 0:
-#                 print(diff.days)    
+def Scheduled_task(id,s_date,e_date):
+    task=Task.objects.get(id=id)
+    s_date = str(s_date)
+    e_date = str(e_date)
+    if datetime.datetime.now().timestamp() > parser.parse(s_date).timestamp():
+        task.started = True
+        task.ended = False
+        task.save()
+    
+    if datetime.datetime.now().timestamp() >= parser.parse(e_date).timestamp():
+        task.started = False
+        task.ended = True
+        task.save()

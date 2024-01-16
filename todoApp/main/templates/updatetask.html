@@ -23,7 +23,41 @@ Update Task | ToDo
                         class="px-4 py-2 transition duration-300 border border-gray-300 rounded focus:border-transparent focus:outline-none focus:ring-4 focus:ring-blue-200" />
                 </div>
                 <div class="flex flex-col space-y-1">
-                </div>
+                    <label for="s_date" class="text-sm font-semibold text-gray-500"
+                      >Start Date</label
+                    >
+                    <input
+                      type="date"
+                      id="s_date"
+                      autofocus
+                      name="s_date"
+                      class="px-4 py-2 transition duration-300 border border-gray-300 rounded focus:border-transparent focus:outline-none focus:ring-4 focus:ring-blue-200"
+                    />
+                  </div>
+                  {% comment %} <div class="flex flex-col space-y-1">
+                    <label for="s_time" class="text-sm font-semibold text-gray-500"
+                      >Start Time</label
+                    >
+                    <input
+                      type="time"
+                      id="s_time"
+                      autofocus
+                      name="s_time"
+                      class="px-4 py-2 transition duration-300 border border-gray-300 rounded focus:border-transparent focus:outline-none focus:ring-4 focus:ring-blue-200"
+                    />
+                  </div> {% endcomment %}
+                  <div class="flex flex-col space-y-1">
+                    <label for="e_date" class="text-sm font-semibold text-gray-500"
+                      >End Date</label
+                    >
+                    <input
+                      type="date"
+                      id="e_date"
+                      autofocus
+                      name="e_date"
+                      class="px-4 py-2 transition duration-300 border border-gray-300 rounded focus:border-transparent focus:outline-none focus:ring-4 focus:ring-blue-200"
+                    />
+                  </div>
                 <div class="flex flex-col space-y-1">
           
 
@@ -40,7 +74,7 @@ Update Task | ToDo
                       class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                       <option selected>Select people </option>
                       >{% for i in users %}
-                      <option value="{{i.id}}">{{i.id}}- {{i.username}}</option>
+                      <option value="{{i.id}}">{{i.username}}</option>
                       {% endfor %}
                     </select>
                   </div>

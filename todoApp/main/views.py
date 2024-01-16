@@ -82,15 +82,15 @@ def createTask(request):
             users.append(user.email)
         task.save()
         if task:
-            messages.success(request,"Task created successfully")
-        print(users)
+            messages.success(request,"Task created successfully")  
         
 
-        subject = 'New task'
-        message = f'{title}\n{desc}'
-        email_from = settings.EMAIL_HOST_USER
-        recipient_list = users
-        send_mail( subject, message, email_from, recipient_list )
+            subject = 'New task'
+            message = f'{title}\n{desc}'
+            email_from = settings.EMAIL_HOST_USER
+            recipient_list = users
+            send_mail( subject, message, email_from, recipient_list )
+            return redirect('home')
 
     context = {"users":users}
     return render(request,'createtask.html',context)

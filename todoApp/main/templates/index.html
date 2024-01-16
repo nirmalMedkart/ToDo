@@ -51,7 +51,7 @@
       {% if tasks %} {% for i in tasks %}
       <div class="rounded">
         <div
-          class="w-full h-52 flex flex-col justify-between items-start dark:bg-gray-800 bg-green-300 mb-6 py-5 px-4"
+          class="w-full h-52 flex flex-col justify-between items-start dark:bg-gray-800 bg-blue-100 mb-6 py-5 px-4"
         >
           <div class="">
             <a href="{% url 'task' id=i.id %}">
@@ -60,7 +60,7 @@
               </h4>
             </a>
             <p class="text-gray-800 dark:text-gray-100 text-sm text-wrap">
-              {{i.desc|truncatechars:25}}
+              {{i.desc|truncatechars:50}}
             </p>
           </div>
           <div class="w-full flex flex-col items-start">

@@ -8,9 +8,10 @@ class Task(models.Model):
     desc = models.TextField()
     started = models.BooleanField(default=False)
     ended = models.BooleanField(default=False)
+    members = models.ManyToManyField(User, related_name="members")
+    # extra
     start_date = models.DateField(null=True, blank=True)
     end_date = models.DateField(null=True, blank=True)
-    members = models.ManyToManyField(User, related_name="members")
 
     def __str__(self):
         return self.title

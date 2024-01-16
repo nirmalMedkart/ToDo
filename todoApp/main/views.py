@@ -7,7 +7,7 @@ import datetime
 from django.contrib.auth.decorators import login_required
 from django.conf import settings
 from django.core.mail import send_mail
-from django.views.decorators.cache import cache_control
+# from django.views.decorators.cache import cache_control
 
 # Create your views here.
 @login_required(login_url="login")
@@ -49,7 +49,7 @@ def register(request):
         return redirect("home")
     return render(request, 'register.html')
 
-@cache_control(no_cache=True, must_revalidate=True)
+# @cache_control(no_cache=True, must_revalidate=True)
 def signin(request):
     if not request.user.is_authenticated:
         if request.method == 'POST':
@@ -193,11 +193,13 @@ def signout(request):
     messages.info(request, "You have successfully logged out.") 
     return redirect('login')
 
+
+
 def Scheduled_task(id,s_date,e_date):
     task=Task.objects.get(id=id)
     s_date = str(s_date)
     e_date = str(e_date)
-    if datetime.datetime.now().timestamp() > parser.parse(s_date).timestamp():
+    if datetime.datetime.now().timestamp() >= parser.parse(s_date).timestamp():
         task.started = True
         task.ended = False
         task.save()

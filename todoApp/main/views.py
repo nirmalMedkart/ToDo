@@ -49,7 +49,7 @@ def register(request):
         return redirect("home")
     return render(request, 'register.html')
 
-# @cache_control(no_cache=True, must_revalidate=True)
+
 def signin(request):
     if not request.user.is_authenticated:
         if request.method == 'POST':
